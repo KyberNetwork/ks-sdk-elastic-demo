@@ -4,6 +4,14 @@ This repository serves as a guide for developers looking to interact with KyberS
 
 * Getting a quote
 
+## Getting Started
+
+To run the examples:
+
+* Clone this repository
+* Install dependencies: `npm install`
+* Run dev environment: `npm run start:dev`
+
 ## Detailed Guides And Technical Reference
 
 For each of the operations listed above, a guide has been created on the [KyberSwap Docs](https://docs.kyberswap.com/liquidity-solutions/elastic-sdk) which goes through in detail each of the steps required to complete the specific operation. You can also find the full list of [Elastic SDK Classes](https://docs.kyberswap.com/liquidity-solutions/elastic-sdk/classes) on the Docs.
