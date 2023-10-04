@@ -8,7 +8,7 @@ import { elasticContracts, token0, token1 } from '../libs/constants';
 export async function getQoute() {
 
     console.log(`\nQuerying on-chain pool data...`);
-    const pool = await getPoolConstants();
+    const pool = await getPool();
     const route = new Route([pool], token0, token1);
     const token0RawAmountIn = 100000000;
 
@@ -43,11 +43,11 @@ export async function getQoute() {
     Sqrt price of pool after swap: ${afterSqrtP}
     Number of initialized ticks crossed: ${initializedTicksCrossed}
     Estimated gas required for swap: ${gasEstimate}
-    `)
+    `);
 
 }
 
-async function getPoolConstants(): Promise<Pool> {
+async function getPool(): Promise<Pool> {
 
     // Get the address of the token pool. Each pool is uniquely identifiable by the token pair and fee
     console.log(`\nComputing pool address...`);
