@@ -10,7 +10,8 @@ To run the examples:
 
 * Clone this repository
 * Install dependencies: `npm install`
-* Run dev environment: `npm run start:dev`
+* Run dev environment with Nodemon (auto-refresh on save): `npm run start:dev`
+* Run dev environment: `npm run start`
 
 ## Detailed Guides And Technical Reference
 
