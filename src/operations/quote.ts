@@ -40,7 +40,7 @@ export async function getQoute() {
     console.log(`
     Amount of token0 used from input: ${usedAmount} (with token decimals: ${CurrencyAmount.fromRawAmount(token0, usedAmount).toExact()})
     Amount of token1 received as output: ${returnedAmount} (with token decimals: ${CurrencyAmount.fromRawAmount(token1, returnedAmount).toExact()})
-    Sqrt price of pool after swap: ${afterSqrtP}
+    Sqrt price of pool after swap: ${afterSqrtP} (1KNC:${((afterSqrtP/2**96)**2)*10**(token1.decimals-token0.decimals)}USDC)
     Number of initialized ticks crossed: ${initializedTicksCrossed}
     Estimated gas required for swap: ${gasEstimate}
     `);
