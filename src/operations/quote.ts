@@ -10,7 +10,7 @@ export async function getQoute() {
     console.log(`\nQuerying on-chain pool data...`);
     const pool = await getPool();
     const route = new Route([pool], token0, token1);
-    const token0RawAmountIn = 100000000;
+    const token0RawAmountIn = 10000000; // USDC has 6 decimals hence 10*10^6
 
     // Encode the call to send to the Quoter contract
     console.log(`\nEncode quote call parameters to send to Quoter contract...`);
