@@ -38,8 +38,8 @@ export async function getQoute() {
     const initializedTicksCrossed = returnedQuote.output['initializedTicksCrossed'].toString();
     const gasEstimate = returnedQuote.output['gasEstimate'].toString();
     console.log(`
-    Amount of token0 used from input: ${usedAmount}
-    Amount of token1 received as output: ${CurrencyAmount.fromRawAmount(token1, returnedAmount).toExact()}
+    Amount of token0 used from input: ${usedAmount} (with token decimals: ${CurrencyAmount.fromRawAmount(token0, usedAmount).toExact()})
+    Amount of token1 received as output: ${returnedAmount} (with token decimals: ${CurrencyAmount.fromRawAmount(token1, returnedAmount).toExact()})
     Sqrt price of pool after swap: ${afterSqrtP}
     Number of initialized ticks crossed: ${initializedTicksCrossed}
     Estimated gas required for swap: ${gasEstimate}
