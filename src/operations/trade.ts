@@ -46,7 +46,7 @@ export async function executeTrade() {
     };
     console.log(`slippageTolerance (%): ${Number(swapOptions.slippageTolerance.numerator)/Number(swapOptions.slippageTolerance.denominator)},\ndeadline: ${swapOptions.deadline},\nrecipient: ${swapOptions.recipient}`)
 
-    // Get the swap pmethod parameters from the SwapRouter contract
+    // Get the swap method parameters from the SwapRouter contract
     console.log(`\nGetting the swap method parameters...`);
     const swapMethodParams = SwapRouter.swapCallParameters([uncheckedTrade], swapOptions);
 
