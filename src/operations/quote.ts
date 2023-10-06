@@ -2,22 +2,29 @@ import { ethers } from 'ethers';
 import { getProvider } from '../libs/provider';
 import PoolABI from '../abis/pool.json';
 import { computePoolAddress, FeeAmount, SwapQuoter, Route, Pool } from '@kyberswap/ks-sdk-elastic';
-import { CurrencyAmount, TradeType } from '@kyberswap/ks-sdk-core';
+import { Currency, CurrencyAmount, TradeType } from '@kyberswap/ks-sdk-core';
 import { elasticContracts, token0, token1 } from '../libs/constants';
 
-export async function getQoute() {
+export async function getQoute(): Promise<
+    {
+        route: Route<Currency, Currency>, 
+        inputAmount: CurrencyAmount<Currency>, 
+        outputAmount: CurrencyAmount<Currency>,
+        tradeType: TradeType
+    }> {
 
     console.log(`\nQuerying on-chain pool data...`);
     const pool = await getPool();
-    const route = new Route([pool], token0, token1);
-    const token0RawAmountIn = 10000000; // USDC has 6 decimals hence 10*10^6
+    const route: Route<Currency, Currency> = new Route([pool], token0, token1);
+    const token0RawAmountIn = 1*(10**token0.decimals); // USDC has 6 decimals hence 1*10^6
+    const tradeType = TradeType.EXACT_INPUT;
 
     // Encode the call to send to the Quoter contract
     console.log(`\nEncode quote call parameters to send to Quoter contract...`);
     const quoteCallParameters = SwapQuoter.quoteCallParameters(
         route,
         CurrencyAmount.fromRawAmount(token0, token0RawAmountIn),
-        TradeType.EXACT_INPUT
+        tradeType
     );
     console.log(`calldata: ${quoteCallParameters.calldata}, \nvalue: ${quoteCallParameters.value}`);
 
@@ -45,9 +52,21 @@ export async function getQoute() {
     Estimated gas required for swap: ${gasEstimate}
     `);
 
+    // Format the token amounts for use in trade
+    const inputAmount: CurrencyAmount<Currency> = CurrencyAmount.fromRawAmount(token0, usedAmount);
+    const outputAmount: CurrencyAmount<Currency> = CurrencyAmount.fromRawAmount(token1, returnedAmount);
+
+    // Return the quote paramters required for executing a trade
+    return {
+        route,
+        inputAmount,
+        outputAmount,
+        tradeType
+    };
+
 }
 
-async function getPool(): Promise<Pool> {
+export async function getPool(): Promise<Pool> {
 
     // Get the address of the token pool. Each pool is uniquely identifiable by the token pair and fee
     console.log(`\nComputing pool address...`);

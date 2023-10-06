@@ -1,1 +1,4 @@
 node_modules
+
+# Contains private keys for testing
+signerPrivate.ts

@@ -1,4 +1,5 @@
 import { getQoute } from './operations/quote';
+import { executeTrade } from './operations/trade';
 
 /*
     The sections below are divided based on specific Elastic operations.
@@ -6,4 +7,7 @@ import { getQoute } from './operations/quote';
 */
 
 // Get a swap quote from the Quote contract
-getQoute();
+// getQoute();
+
+// Execute the trade based on the above Quote
+    executeTrade();
