@@ -10,16 +10,6 @@ export async function executeTrade() {
     const {route, inputAmount, outputAmount, tradeType} = await getQoute();
     const signerAddress = await getSigner().getAddress();
 
-    // Create the unchecked trade instance
-    console.log(`\nConstructing the unchecked trade from quote results...`)
-    const tradeConstructorArgs = {
-        route,
-        inputAmount,
-        outputAmount,
-        tradeType
-    };
-    const uncheckedTrade = Trade.createUncheckedTrade(tradeConstructorArgs);
-
     // Check if Elastic router contract has permission to spend tokens
     console.log(`\nChecking contract spending allowance...`);
     const token0 = route.input as Token;
@@ -36,6 +26,16 @@ export async function executeTrade() {
     if (contractAllowance < BigInt(inputAmount.quotient.toString())) {
         await getTokenApproval(token0Contract, inputAmount, signerAddress);
     };
+
+    // Create the unchecked trade instance
+    console.log(`\nConstructing the unchecked trade from quote results...`)
+    const tradeConstructorArgs = {
+        route,
+        inputAmount,
+        outputAmount,
+        tradeType
+    };
+    const uncheckedTrade = Trade.createUncheckedTrade(tradeConstructorArgs);
 
     // Configure the swap options
     console.log(`\nConfiguring the swap options...`)
