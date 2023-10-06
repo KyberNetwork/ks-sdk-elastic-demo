@@ -6,8 +6,8 @@ import { executeTrade } from './operations/trade';
     Please comment/uncomment specific sections to run each individual operation on save.
 */
 
-// Get a swap quote from the Quote contract
-// getQoute();
+    // Get a swap quote from the Quote contract
+    // getQoute();
 
-// Execute the trade based on the above Quote
-    executeTrade();
+    // Execute the trade based on the above Quote
+    // executeTrade();

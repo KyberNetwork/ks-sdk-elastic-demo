@@ -2,7 +2,8 @@
 
 This repository serves as a guide for developers looking to interact with KyberSwap Elastic smart contracts via a typescript SDK. For simplicity, the examples are implemented purely in Node.js so that users can focus on the backend logic required to achieve the following Elastic Operations:
 
-* Getting a quote
+* Getting a quote (`getQoute()`)
+* Executing a swap (`executeTrade()`)
 
 ## Getting Started
 
