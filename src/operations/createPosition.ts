@@ -1,6 +1,6 @@
 import { ethers } from "ethers";
 import { getSigner } from "../libs/signer";
-import { token0, token1, elasticContracts } from "../libs/constants";
+import { token0 as token0const, token1 as token1const, elasticContracts } from "../libs/constants";
 import ERC20ABI from "../abis/erc20.json";
 import PoolABI from "../abis/pool.json";
 import TicksFeesReaderABI from "../abis/ticksFeesReader.json";
@@ -10,69 +10,62 @@ import { FeeAmount, NonfungiblePositionManager, Pool, Position, computePoolAddre
 export async function createPosition() {
     const signer = getSigner();
     const signerAddress = await signer.getAddress();
-
-    // Create the token contract instances
-    const token0Contract = new ethers.Contract(token0.address, ERC20ABI, signer);
-    const token1Contract = new ethers.Contract(token1.address, ERC20ABI, signer);
-
-    // Create the target pool instance
     const targetPool: Pool = await getPool();
 
     // Get the position range to be created
-    console.log(`\nCalculating the position range ± 3 tickSpacing...`);
+    console.log(`\nCalculating the position range to be created (± 3 tickSpacing)...`);
     const positionTickLower = nearestUsableTick(targetPool.tickCurrent, targetPool.tickSpacing) - (3*targetPool.tickSpacing);
     const positionTickUpper = nearestUsableTick(targetPool.tickCurrent, targetPool.tickSpacing) + (3*targetPool.tickSpacing);
     console.log(`tickLower: ${positionTickLower},\ntickUpper: ${positionTickUpper}`);
 
     // Create a Position instance which consists of the required tokens given an upper and lower position tick
     console.log(`\nCreating the position instance based on token0 amount assuming unlimited token1...`);
+    var target0Amount;
+    // Check if the pool token0 is equivalent to the token0 we are maintaining locally
+    if (targetPool.token0.address == token0const.address) {
+        // Add 1 token0 worth of token0
+        target0Amount =  1*(10**token0const.decimals);
+    } else {
+        // Add 1 token 0 worth of token1
+        target0Amount = 1*(10**token1const.decimals)*Number(targetPool.token1Price.toSignificant(18)); //rough estimate based on current pool price
+    };
+    console.log(`Target token0 (${targetPool.token0.symbol}) Amount: ${target0Amount}`);
     const targetPosition = Position.fromAmount0({
         pool: targetPool,
         tickLower: positionTickLower,
         tickUpper: positionTickUpper,
-        amount0: 1*(10**token0.decimals), // USDC has 6 decimals hence 1*10^6,
+        amount0: target0Amount,
         useFullPrecision: true
     });
 
     // Calculate the minAmount of tokens required for the swap
     console.log(`\nCalculating the token amounts required for the mint...`)
     const tokenMintAmounts = targetPosition.mintAmounts;
-    const tokenMintAmountsSlippage = targetPosition.mintAmountsWithSlippage(new Percent(50,10000));
+    const tokenMintAmountsSlippage = targetPosition.mintAmountsWithSlippage(new Percent(50,10000)); // 0.5%
     console.log(`
     Mint amounts
-        token0: ${tokenMintAmounts.amount0}
-        token1: ${tokenMintAmounts.amount1}
+        token0 (${targetPool.token0.symbol}): ${tokenMintAmounts.amount0}
+        token1 (${targetPool.token1.symbol}): ${tokenMintAmounts.amount1}
     Mint amounts with slippage: 
-        token0: ${tokenMintAmountsSlippage.amount0}
-        token1: ${tokenMintAmountsSlippage.amount1}
+        token0 (${targetPool.token0.symbol}): ${tokenMintAmountsSlippage.amount0}
+        token1 (${targetPool.token1.symbol}): ${tokenMintAmountsSlippage.amount1}
     `);
 
-    // Check if the contract has the necessary token0 and token1 allowance
-    console.log(`\nChecking if contract has approval to spend token0 and token1...`)
+    // Check if the contract has the necessary token0 and token1 allowance 
+    const token0Contract = new ethers.Contract(targetPool.token0.address, ERC20ABI, signer);
+    const token1Contract = new ethers.Contract(targetPool.token1.address, ERC20ABI, signer);
     const token0Allowance = await token0Contract.allowance(signerAddress, elasticContracts.POSITIONMANAGER);
     const token1Allowance = await token1Contract.allowance(signerAddress, elasticContracts.POSITIONMANAGER);
-    console.log(`token0 Allowance: ${token0Allowance},\ntoken1 Allowance: ${token1Allowance}`);
+    console.log(`token0 (${await token0Contract.symbol()}) Allowance: ${token0Allowance},\ntoken1 (${await token1Contract.symbol()}) Allowance: ${token1Allowance}`);    
 
-    // Check if the position's token0 is equivalent to token0
-    if (await token0Contract.getAddress() == targetPosition.amount0.currency.address) {
-        // Get allowance for both tokens
-        if (token0Allowance < tokenMintAmounts.amount0) {
-            const token0Amount: CurrencyAmount<Currency> = CurrencyAmount.fromRawAmount(token0, tokenMintAmounts.amount0);
-            await getTokenApproval(token0Contract, token0Amount, elasticContracts.POSITIONMANAGER);
-        };
-        if (token1Allowance < tokenMintAmounts.amount1) {
-            const token1Amount: CurrencyAmount<Currency> = CurrencyAmount.fromRawAmount(token1, tokenMintAmounts.amount1);
-            await getTokenApproval(token1Contract, token1Amount, elasticContracts.POSITIONMANAGER);
-        };
-    } else {
-        if (token0Allowance < tokenMintAmounts.amount1) {
-            const token0Amount: CurrencyAmount<Currency> = CurrencyAmount.fromRawAmount(token0, tokenMintAmounts.amount1);
-            await getTokenApproval(token0Contract, token0Amount, elasticContracts.POSITIONMANAGER);
-        };
-        if (token1Allowance < tokenMintAmounts.amount0) {
-            const token1Amount: CurrencyAmount<Currency> = CurrencyAmount.fromRawAmount(token1, tokenMintAmounts.amount0);
-            await getTokenApproval(token1Contract, token1Amount, elasticContracts.POSITIONMANAGER);
-        };
+    if (token0Allowance < tokenMintAmounts.amount0) {
+        const token0Amount: CurrencyAmount<Currency> = CurrencyAmount.fromRawAmount(token0const, tokenMintAmounts.amount0);
+        await getTokenApproval(token0Contract, token0Amount, elasticContracts.POSITIONMANAGER);
+    };
+
+    if (token1Allowance < tokenMintAmounts.amount1) {
+        const token1Amount: CurrencyAmount<Currency> = CurrencyAmount.fromRawAmount(token1const, tokenMintAmounts.amount1);
+        await getTokenApproval(token1Contract, token1Amount, elasticContracts.POSITIONMANAGER);
     };
 
     // Configure minting options
@@ -87,22 +80,18 @@ export async function createPosition() {
     const tickReaderContract = new ethers.Contract(elasticContracts.TICKSFEEREADER, TicksFeesReaderABI, signer);
     const poolAddress = computePoolAddress({
         factoryAddress: elasticContracts.FACTORY,
-        tokenA: token0,
-        tokenB: token1,
+        tokenA: token0const,
+        tokenB: token1const,
         fee: FeeAmount.EXOTIC,
         initCodeHashManualOverride: '0x00e263aaa3a2c06a89b53217a9e7aad7e15613490a72e0f95f303c4de2dc7045'
     });
 
-    const nextInitializedTicks = await tickReaderContract.getNearestInitializedTicks(poolAddress, targetPool.tickCurrent);
     const nextInitializedTicksPosLower = await tickReaderContract.getNearestInitializedTicks(poolAddress, targetPosition.tickLower);
     const nextInitializedTicksPosUpper = await tickReaderContract.getNearestInitializedTicks(poolAddress, targetPosition.tickUpper);
-    console.debug(nextInitializedTicks);
-    console.debug(nextInitializedTicksPosLower);
-    console.debug(nextInitializedTicksPosUpper);
 
     const mintMethodParams = NonfungiblePositionManager.addCallParameters(
         targetPosition,
-        nextInitializedTicks,
+        [nextInitializedTicksPosLower[0], nextInitializedTicksPosUpper[0]],
         mintOptions
     );
     
@@ -114,21 +103,19 @@ export async function createPosition() {
             to: elasticContracts.POSITIONMANAGER,
             value: mintMethodParams.value,
             from: signerAddress,
-            maxFeePerGas: 150000000000,
+            maxFeePerGas: 100000000000,
             maxPriorityFeePerGas: 100000000000
-        })
+        });
     
         const mintTxReceipt = await mintTx.wait();
         console.log(`Mint tx executed with hash: ${mintTxReceipt?.hash}`);
     } catch (error) {
         console.log(error);
     };
-
-
 }
 
 async function getTokenApproval(tokenContract: ethers.Contract, approvalAmount: CurrencyAmount<Currency>, spenderAddress: string) {
-    console.log(`Insufficient allowance, getting approval for input token amount...`)
+    console.log(`Insufficient allowance, getting approval for ${await tokenContract.symbol()}...`);
     try {
         // Call the ERC20 approve method
         const approvalTx = await tokenContract.approve(
@@ -152,8 +139,8 @@ export async function getPool(): Promise<Pool> {
     console.log(`\nComputing pool address...`);
     const poolAddress = computePoolAddress({
         factoryAddress: elasticContracts.FACTORY,
-        tokenA: token0,
-        tokenB: token1,
+        tokenA: token0const,
+        tokenB: token1const,
         fee: FeeAmount.EXOTIC,
         initCodeHashManualOverride: '0x00e263aaa3a2c06a89b53217a9e7aad7e15613490a72e0f95f303c4de2dc7045'
     });
@@ -189,8 +176,8 @@ export async function getPool(): Promise<Pool> {
 
     // Return a new Pool instance corresponding to the pool contract
     return new Pool(
-        token0,
-        token1,
+        token0const,
+        token1const,
         FeeAmount.EXOTIC,
         sqrtP.toString(),
         baseL.toString(),
