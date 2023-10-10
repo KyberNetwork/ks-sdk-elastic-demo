@@ -1,3 +1,4 @@
+import { createPosition } from './operations/createPosition';
 import { getQoute } from './operations/quote';
 import { executeTrade } from './operations/trade';
 
@@ -11,3 +12,6 @@ import { executeTrade } from './operations/trade';
 
     // Execute the trade based on the above Quote
     // executeTrade();
+
+    // Create a new Elastic position
+    createPosition();

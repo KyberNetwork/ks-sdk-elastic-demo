@@ -4,7 +4,9 @@ export const elasticContracts = {
     // See Elastic Contract Addresses for chain-specific addresses (https://docs.kyberswap.com/liquidity-solutions/kyberswap-elastic/contracts/elastic-contract-addresses)
     FACTORY: '0xC7a590291e07B9fe9E64b86c58fD8fC764308C4A',
     QUOTER: '0x4d47fd5a29904Dae0Ef51b1c450C9750F15D7856',
-    ROUTER: '0xF9c2b5746c946EF883ab2660BbbB1f10A5bdeAb4'
+    ROUTER: '0xF9c2b5746c946EF883ab2660BbbB1f10A5bdeAb4',
+    POSITIONMANAGER: '0xe222fBE074A436145b255442D919E4E3A6c6a480',
+    TICKSFEEREADER: '0x8Fd8Cb948965d9305999D767A02bf79833EADbB3'
 };
 
 export const token0 = new Token(

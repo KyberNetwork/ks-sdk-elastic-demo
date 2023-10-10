@@ -40,7 +40,7 @@ export async function executeTrade() {
     // Configure the swap options
     console.log(`\nConfiguring the swap options...`)
     const swapOptions: SwapOptions = {
-        slippageTolerance: new Percent(500, 10000), // 50bips or 0.50%
+        slippageTolerance: new Percent(50, 10000), // 50bips or 0.50%
         deadline: Math.floor(Date.now() / 1000) + 60 * 10, //10 mins
         recipient: signerAddress
     };
