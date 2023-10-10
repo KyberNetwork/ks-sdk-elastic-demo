@@ -14,4 +14,4 @@ import { executeTrade } from './operations/trade';
     // executeTrade();
 
     // Create a new Elastic position
-    createPosition();
+    // createPosition();

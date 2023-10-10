@@ -4,6 +4,7 @@ This repository serves as a guide for developers looking to interact with KyberS
 
 * Getting a quote (`getQoute()`)
 * Executing a swap (`executeTrade()`)
+* Create a new position (`createPosition()`)
 
 ## Getting Started
 
