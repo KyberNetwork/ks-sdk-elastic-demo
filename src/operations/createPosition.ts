@@ -38,7 +38,7 @@ export async function createPosition() {
         useFullPrecision: true
     });
 
-    // Calculate the minAmount of tokens required for the swap
+    // Calculate the minAmount of tokens required for the mint
     console.log(`\nCalculating the token amounts required for the mint...`)
     const tokenMintAmounts = targetPosition.mintAmounts;
     const tokenMintAmountsSlippage = targetPosition.mintAmountsWithSlippage(new Percent(50,10000)); // 0.5%
