@@ -53,17 +53,17 @@ export async function increaseLiquidity() {
         useFullPrecision: true
     });
 
-    // Calculate the minAmount of tokens required for the mint
-    console.log(`\nCalculating the token amounts required for the mint...`)
-    const tokenMintAmounts = targetPositionNew.mintAmounts;
-    const tokenMintAmountsSlippage = targetPositionNew.mintAmountsWithSlippage(new Percent(50,10000)); // 0.5%
+    // Calculate the minAmount of tokens required for the liquidity addition
+    console.log(`\nCalculating the token amounts required for the liquidity addition...`)
+    const tokenIncrementAmounts = targetPositionNew.mintAmounts;
+    const tokenIncrementAmountsSlippage = targetPositionNew.mintAmountsWithSlippage(new Percent(50,10000)); // 0.5%
     console.log(`
-    Mint amounts
-        token0 (${targetPool.token0.symbol}): ${tokenMintAmounts.amount0}
-        token1 (${targetPool.token1.symbol}): ${tokenMintAmounts.amount1}
-    Mint amounts with slippage: 
-        token0 (${targetPool.token0.symbol}): ${tokenMintAmountsSlippage.amount0}
-        token1 (${targetPool.token1.symbol}): ${tokenMintAmountsSlippage.amount1}
+    Increment amounts
+        token0 (${targetPool.token0.symbol}): ${tokenIncrementAmounts.amount0}
+        token1 (${targetPool.token1.symbol}): ${tokenIncrementAmounts.amount1}
+    Increment amounts with slippage: 
+        token0 (${targetPool.token0.symbol}): ${tokenIncrementAmountsSlippage.amount0}
+        token1 (${targetPool.token1.symbol}): ${tokenIncrementAmountsSlippage.amount1}
     `);
 
     // Check if the contract has the necessary token0 and token1 allowance 
@@ -73,13 +73,13 @@ export async function increaseLiquidity() {
     const token1Allowance = await token1Contract.allowance(signerAddress, elasticContracts.POSITIONMANAGER);
     console.log(`token0 (${await token0Contract.symbol()}) Allowance: ${token0Allowance},\ntoken1 (${await token1Contract.symbol()}) Allowance: ${token1Allowance}`);    
 
-    if (token0Allowance < tokenMintAmounts.amount0) {
-        const token0Amount: CurrencyAmount<Currency> = CurrencyAmount.fromRawAmount(token0const, tokenMintAmounts.amount0);
+    if (token0Allowance < tokenIncrementAmounts.amount0) {
+        const token0Amount: CurrencyAmount<Currency> = CurrencyAmount.fromRawAmount(token0const, tokenIncrementAmounts.amount0);
         await getTokenApproval(token0Contract, token0Amount, elasticContracts.POSITIONMANAGER);
     };
 
-    if (token1Allowance < tokenMintAmounts.amount1) {
-        const token1Amount: CurrencyAmount<Currency> = CurrencyAmount.fromRawAmount(token1const, tokenMintAmounts.amount1);
+    if (token1Allowance < tokenIncrementAmounts.amount1) {
+        const token1Amount: CurrencyAmount<Currency> = CurrencyAmount.fromRawAmount(token1const, tokenIncrementAmounts.amount1);
         await getTokenApproval(token1Contract, token1Amount, elasticContracts.POSITIONMANAGER);
     };
 
@@ -204,7 +204,7 @@ async function getSignerPositions(signerAddress: string, poolAddress: string): P
                     }  
                 `
             },
-          );
+        );
 
         const positions: PosSubgraphData[] = [];
 
