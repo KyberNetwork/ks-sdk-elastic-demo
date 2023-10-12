@@ -5,6 +5,7 @@ This repository serves as a guide for developers looking to interact with KyberS
 * Getting a quote (`getQoute()`)
 * Executing a trade (`executeTrade()`)
 * Create a new position (`createPosition()`)
+* Add liquidity to exisintg position (`increaseLiquidity()`)
 
 ## Getting Started
 

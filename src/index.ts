@@ -1,4 +1,5 @@
 import { createPosition } from './operations/createPosition';
+import { increaseLiquidity } from './operations/increaseLiquidity';
 import { getQoute } from './operations/quote';
 import { executeTrade } from './operations/trade';
 
@@ -15,3 +16,6 @@ import { executeTrade } from './operations/trade';
 
     // Create a new Elastic position
     // createPosition();
+
+    // Increase position liquidity
+    // increaseLiquidity();

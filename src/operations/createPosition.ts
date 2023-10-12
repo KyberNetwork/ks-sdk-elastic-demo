@@ -78,13 +78,7 @@ export async function createPosition() {
     // Get the calldata for minting the position
     console.log(`\nGetting the mint call parameters...`)
     const tickReaderContract = new ethers.Contract(elasticContracts.TICKSFEEREADER, TicksFeesReaderABI, signer);
-    const poolAddress = computePoolAddress({
-        factoryAddress: elasticContracts.FACTORY,
-        tokenA: token0const,
-        tokenB: token1const,
-        fee: FeeAmount.EXOTIC,
-        initCodeHashManualOverride: '0x00e263aaa3a2c06a89b53217a9e7aad7e15613490a72e0f95f303c4de2dc7045'
-    });
+    const poolAddress = getPoolAddress();
 
     const nextInitializedTicksPosLower = await tickReaderContract.getNearestInitializedTicks(poolAddress, targetPosition.tickLower);
     const nextInitializedTicksPosUpper = await tickReaderContract.getNearestInitializedTicks(poolAddress, targetPosition.tickUpper);
@@ -137,13 +131,7 @@ export async function getPool(): Promise<Pool> {
 
     // Get the address of the token pool. Each pool is uniquely identifiable by the token pair and fee
     console.log(`\nComputing pool address...`);
-    const poolAddress = computePoolAddress({
-        factoryAddress: elasticContracts.FACTORY,
-        tokenA: token0const,
-        tokenB: token1const,
-        fee: FeeAmount.EXOTIC,
-        initCodeHashManualOverride: '0x00e263aaa3a2c06a89b53217a9e7aad7e15613490a72e0f95f303c4de2dc7045'
-    });
+    const poolAddress = getPoolAddress();
     console.log(`poolAddress: ${poolAddress}`);
 
     // Create a ethers Contract instance of the pool
@@ -184,4 +172,14 @@ export async function getPool(): Promise<Pool> {
         reinvestL.toString(),
         Number(currentTick)
     );
+}
+
+function getPoolAddress(): string {
+    return computePoolAddress({
+        factoryAddress: elasticContracts.FACTORY,
+        tokenA: token0const,
+        tokenB: token1const,
+        fee: FeeAmount.EXOTIC,
+        initCodeHashManualOverride: '0x00e263aaa3a2c06a89b53217a9e7aad7e15613490a72e0f95f303c4de2dc7045'
+    });
 }
