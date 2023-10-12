@@ -1,6 +1,7 @@
 import { createPosition } from './operations/createPosition';
 import { increaseLiquidity } from './operations/increaseLiquidity';
 import { getQoute } from './operations/quote';
+import { removeLiquidity } from './operations/removeLiquidity';
 import { executeTrade } from './operations/trade';
 
 /*
@@ -19,3 +20,6 @@ import { executeTrade } from './operations/trade';
 
     // Increase position liquidity
     // increaseLiquidity();
+
+    // Remove position liquidity
+    // removeLiquidity();

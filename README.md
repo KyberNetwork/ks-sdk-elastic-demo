@@ -6,6 +6,7 @@ This repository serves as a guide for developers looking to interact with KyberS
 * Executing a trade (`executeTrade()`)
 * Create a new position (`createPosition()`)
 * Add liquidity to exisintg position (`increaseLiquidity()`)
+* Remove liquidity (`removeLiquidity()`)
 
 ## Getting Started
 
