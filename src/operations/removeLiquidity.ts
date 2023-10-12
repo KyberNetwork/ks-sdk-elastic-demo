@@ -79,7 +79,7 @@ export async function removeLiquidity() {
     // Execute the remove liquidity transaction
     console.log(`\nExecuting the remove liquidity...`);
     try {
-        const mintTx = await signer.sendTransaction({
+        const removeLiquidityTx = await signer.sendTransaction({
             data: removeLiquidityParams.calldata,
             to: elasticContracts.POSITIONMANAGER,
             value: removeLiquidityParams.value,
@@ -88,8 +88,8 @@ export async function removeLiquidity() {
             maxPriorityFeePerGas: 100000000000
         });
     
-        const mintTxReceipt = await mintTx.wait();
-        console.log(`Remove liquidity tx executed with hash: ${mintTxReceipt?.hash}`);
+        const removeLiquidityTxReceipt = await removeLiquidityTx.wait();
+        console.log(`Remove liquidity tx executed with hash: ${removeLiquidityTxReceipt?.hash}`);
     } catch (error) {
         console.log(error);
     };   

@@ -105,7 +105,7 @@ export async function increaseLiquidity() {
     // Execute the add liquidity transaction
     console.log(`\nExecuting the add liquidity...`);
     try {
-        const mintTx = await signer.sendTransaction({
+        const increaseLiquidityTx = await signer.sendTransaction({
             data: addLiquidityParams.calldata,
             to: elasticContracts.POSITIONMANAGER,
             value: addLiquidityParams.value,
@@ -114,8 +114,8 @@ export async function increaseLiquidity() {
             maxPriorityFeePerGas: 100000000000
         });
     
-        const mintTxReceipt = await mintTx.wait();
-        console.log(`Add liquidity tx executed with hash: ${mintTxReceipt?.hash}`);
+        const increaseLiquidityTxReceipt = await increaseLiquidityTx.wait();
+        console.log(`Add liquidity tx executed with hash: ${increaseLiquidityTxReceipt?.hash}`);
     } catch (error) {
         console.log(error);
     };    
